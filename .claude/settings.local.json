@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(touch:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(docker compose:*)",
+      "Bash(curl:*)",
+      "Skill(frontend-design:frontend-design)"
+    ]
+  }
+}
