@@ -11,7 +11,9 @@
       "Bash(npm run build:*)",
       "Bash(docker compose:*)",
       "Bash(curl:*)",
-      "Skill(frontend-design:frontend-design)"
+      "Skill(frontend-design:frontend-design)",
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)"
     ]
   }
 }

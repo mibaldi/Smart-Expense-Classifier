@@ -54,15 +54,27 @@ async def import_expenses(
 
     expenses = []
     for _, row in df.iterrows():
+        # Skip rows with NaN values in required columns
+        if pd.isna(row[columns.date]) or pd.isna(row[columns.description]) or pd.isna(row[columns.amount]):
+            continue
+
         try:
             expense_date = pd.to_datetime(row[columns.date], dayfirst=True).date()
         except Exception:
             continue
 
-        description = str(row[columns.description])
+        description = str(row[columns.description]).strip()
+        # Skip if description is empty or just "nan"
+        if not description or description.lower() == "nan":
+            continue
+
         try:
-            amount = float(str(row[columns.amount]).replace(",", ".").replace("€", "").strip())
-        except ValueError:
+            amount_str = str(row[columns.amount]).replace(",", ".").replace("€", "").strip()
+            amount = float(amount_str)
+            # Skip NaN amounts
+            if pd.isna(amount):
+                continue
+        except (ValueError, TypeError):
             continue
 
         # Classify with AI
@@ -93,7 +105,7 @@ async def import_expenses(
 async def list_expenses(
     db: AsyncSession = Depends(get_db),
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    limit: int = Query(500, ge=1, le=5000),
     category: str | None = None,
     start_date: date | None = None,
     end_date: date | None = None,

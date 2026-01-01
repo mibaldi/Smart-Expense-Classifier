@@ -14,8 +14,8 @@ export async function importExpenses(file: File): Promise<ImportResponse> {
   return data;
 }
 
-export async function getExpenses(): Promise<Expense[]> {
-  const { data } = await api.get<Expense[]>('/expenses');
+export async function getExpenses(limit: number = 5000): Promise<Expense[]> {
+  const { data } = await api.get<Expense[]>(`/expenses?limit=${limit}`);
   return data;
 }
 

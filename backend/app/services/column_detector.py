@@ -56,7 +56,7 @@ def _detect_by_content(df: pd.DataFrame, detected: DetectedColumns) -> DetectedC
         # Detect date by trying to parse
         if detected.date is None:
             try:
-                parsed = pd.to_datetime(sample, errors="coerce", dayfirst=True)
+                parsed = pd.to_datetime(sample, errors="coerce", dayfirst=True, format="mixed")
                 if parsed.notna().sum() > len(sample) * 0.8:
                     detected.date = col
                     continue

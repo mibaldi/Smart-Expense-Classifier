@@ -42,6 +42,9 @@ class Classification:
 
 def _get_provider() -> str:
     """Determine which AI provider to use."""
+    # Skip AI if USE_AI is explicitly set to false
+    if os.getenv("USE_AI", "true").lower() == "false":
+        return "fallback"
     if os.getenv("OLLAMA_HOST"):
         return "ollama"
     elif os.getenv("ANTHROPIC_API_KEY"):
@@ -154,14 +157,29 @@ async def _classify_anthropic(prompt: str) -> Classification:
 
 def _parse_json_response(content: str) -> Classification:
     """Extract JSON from LLM response."""
-    # Try to find JSON in the response
-    json_match = re.search(r'\{[^}]+\}', content)
-    if json_match:
-        data = json.loads(json_match.group())
+    # Try to parse the whole content as JSON first
+    try:
+        data = json.loads(content.strip())
         return Classification(
             category=data.get("category", "Otros"),
             subcategory=data.get("subcategory"),
         )
+    except json.JSONDecodeError:
+        pass
+
+    # Try to find JSON in the response (handles nested braces)
+    json_match = re.search(r'\{[^{}]*"category"[^{}]*\}', content)
+    if json_match:
+        try:
+            data = json.loads(json_match.group())
+            return Classification(
+                category=data.get("category", "Otros"),
+                subcategory=data.get("subcategory"),
+            )
+        except json.JSONDecodeError:
+            pass
+
+    print(f"Could not parse JSON from response: {content[:200]}")
     raise ValueError("No valid JSON found in response")
 
 
